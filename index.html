@@ -20,27 +20,27 @@
 <body class="bg-gray-50 dark:bg-[#0e1217] text-gray-900 dark:text-gray-100 min-h-screen">
 
     <div class="max-w-7xl mx-auto px-6 py-10">
-        <header class="flex justify-between items-center mb-8">
+        <header class="flex justify-between items-center mb-10">
             <div>
                 <h1 class="text-3xl font-bold mb-1 tracking-tight">TEKNIX LOGO EXPLORER</h1>
-                <p class="text-gray-500 dark:text-gray-400 text-sm">Hệ thống quản lý Assets dành cho DevOps & Design.</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm italic">Designed for DevOps & Design Teams.</p>
             </div>
-            <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-white dark:bg-[#1c2128] border border-gray-200 dark:border-gray-700 hover:ring-2 ring-blue-500 transition shadow-sm">
-                <span class="dark:hidden text-sm font-medium">🌙 Dark Mode</span>
-                <span class="hidden dark:inline text-sm font-medium">☀️ Light Mode</span>
+            <button onclick="toggleTheme()" class="p-3 rounded-xl bg-white dark:bg-[#1c2128] border border-gray-200 dark:border-gray-700 hover:ring-2 ring-blue-500 transition shadow-sm font-semibold text-xs">
+                <span class="dark:hidden">🌙 DARK MODE</span>
+                <span class="hidden dark:inline">☀️ LIGHT MODE</span>
             </button>
         </header>
 
         <div class="flex flex-col md:flex-row gap-4 mb-8">
             <div class="relative flex-1">
-                <input type="text" id="searchInput" placeholder="Tìm kiếm theo tên file..." 
+                <input type="text" id="searchInput" placeholder="Tìm kiếm tên logo..." 
                     class="w-full bg-white dark:bg-[#1c2128] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 ring-blue-500 transition shadow-sm">
             </div>
             <div class="flex gap-2 overflow-x-auto pb-1" id="filterTabs">
-                <button onclick="filterFiles('all', this)" class="tab-btn bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-semibold shadow-md">Tất cả</button>
-                <button onclick="filterFiles('white', this)" class="tab-btn bg-white dark:bg-[#1c2128] border border-gray-300 dark:border-gray-700 px-6 py-3 rounded-xl text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition shadow-sm">White</button>
-                <button onclick="filterFiles('blue', this)" class="tab-btn bg-white dark:bg-[#1c2128] border border-gray-300 dark:border-gray-700 px-6 py-3 rounded-xl text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition shadow-sm">Blue</button>
-                <button onclick="filterFiles('full-color', this)" class="tab-btn bg-white dark:bg-[#1c2128] border border-gray-300 dark:border-gray-700 px-6 py-3 rounded-xl text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition shadow-sm">Color</button>
+                <button onclick="filterFiles('all', this)" class="tab-btn bg-blue-600 text-white px-6 py-3 rounded-xl text-xs font-bold shadow-md uppercase tracking-wider">Tất cả</button>
+                <button onclick="filterFiles('white', this)" class="tab-btn bg-white dark:bg-[#1c2128] border border-gray-300 dark:border-gray-700 px-6 py-3 rounded-xl text-xs font-bold hover:bg-gray-100 dark:hover:bg-gray-700 transition shadow-sm uppercase tracking-wider">White</button>
+                <button onclick="filterFiles('blue', this)" class="tab-btn bg-white dark:bg-[#1c2128] border border-gray-300 dark:border-gray-700 px-6 py-3 rounded-xl text-xs font-bold hover:bg-gray-100 dark:hover:bg-gray-700 transition shadow-sm uppercase tracking-wider">Blue</button>
+                <button onclick="filterFiles('full-color', this)" class="tab-btn bg-white dark:bg-[#1c2128] border border-gray-300 dark:border-gray-700 px-6 py-3 rounded-xl text-xs font-bold hover:bg-gray-100 dark:hover:bg-gray-700 transition shadow-sm uppercase tracking-wider">Color</button>
             </div>
         </div>
 
@@ -52,26 +52,26 @@
             
             <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-[#1c2128]">
                 <div class="flex items-center gap-3">
-                    <span class="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-[10px] font-bold px-2 py-1 rounded">PREVIEW MODE</span>
-                    <span id="modalFileName" class="font-mono text-sm truncate max-w-[200px] md:max-w-md">filename.svg</span>
+                    <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded tracking-widest">PREVIEW</span>
+                    <span id="modalFileName" class="font-mono text-sm truncate max-w-[200px] md:max-w-md opacity-70 italic">filename.svg</span>
                 </div>
                 <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition">✕</button>
             </div>
 
             <div class="flex flex-col md:flex-row flex-1 overflow-hidden">
-                <div id="previewCanvas" class="flex-1 bg-[#eef2f6] flex items-center justify-center p-12 relative transition-colors overflow-hidden">
-                    <div id="bgImageLayer" class="absolute inset-0 bg-cover bg-center opacity-0 transition-opacity duration-500"></div>
-                    <img id="modalImage" src="" class="max-w-full max-h-full object-contain z-10 drop-shadow-xl transition-transform duration-300">
+                <div id="previewCanvas" class="flex-1 bg-[#eef2f6] flex items-center justify-center p-12 relative transition-colors overflow-hidden shadow-inner">
+                    <div id="bgImageLayer" class="absolute inset-0 bg-cover bg-center opacity-0 transition-opacity duration-500 scale-105"></div>
+                    <img id="modalImage" src="" class="max-w-full max-h-full object-contain z-10 drop-shadow-2xl transition-all duration-300">
                 </div>
 
-                <div class="w-full md:w-80 p-6 border-l dark:border-gray-700 bg-gray-50 dark:bg-[#1c2128] flex flex-col gap-8 shadow-inner">
+                <div class="w-full md:w-80 p-6 border-l dark:border-gray-700 bg-gray-50 dark:bg-[#1c2128] flex flex-col gap-8">
                     <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-4">Màu nền thử nghiệm</label>
+                        <label class="block text-[11px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-4">Thử nghiệm màu nền</label>
                         <div class="grid grid-cols-5 gap-3">
-                            <button onclick="setPreviewBg('#eef2f6')" class="w-9 h-9 rounded-lg border-2 border-transparent bg-[#eef2f6] hover:scale-110 hover:border-blue-500 transition shadow-sm"></button>
-                            <button onclick="setPreviewBg('#ffffff')" class="w-9 h-9 rounded-lg border-2 border-white bg-white hover:scale-110 hover:border-blue-500 transition shadow-sm"></button>
-                            <button onclick="setPreviewBg('#1a202c')" class="w-9 h-9 rounded-lg border-2 border-transparent bg-gray-900 hover:scale-110 hover:border-blue-500 transition shadow-sm"></button>
-                            <button onclick="setPreviewBg('#3b82f6')" class="w-9 h-9 rounded-lg border-2 border-transparent bg-blue-500 hover:scale-110 hover:border-blue-500 transition shadow-sm"></button>
+                            <button onclick="setPreviewBg('#eef2f6')" class="w-9 h-9 rounded-lg border-2 border-transparent bg-[#eef2f6] hover:scale-110 transition shadow-sm"></button>
+                            <button onclick="setPreviewBg('#ffffff')" class="w-9 h-9 rounded-lg border-2 border-white bg-white hover:scale-110 transition shadow-sm"></button>
+                            <button onclick="setPreviewBg('#1a202c')" class="w-9 h-9 rounded-lg border-2 border-transparent bg-gray-900 hover:scale-110 transition shadow-sm"></button>
+                            <button onclick="setPreviewBg('#3b82f6')" class="w-9 h-9 rounded-lg border-2 border-transparent bg-blue-500 hover:scale-110 transition shadow-sm"></button>
                             <div class="relative w-9 h-9 rounded-lg border-2 border-transparent overflow-hidden hover:scale-110 transition shadow-sm bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500">
                                 <input type="color" oninput="setPreviewBg(this.value)" class="absolute inset-[-10px] w-[200%] h-[200%] cursor-pointer opacity-0">
                             </div>
@@ -80,24 +80,26 @@
 
                     <div>
                         <div class="flex justify-between items-center mb-4">
-                            <label class="text-[11px] font-bold uppercase tracking-[0.1em] text-gray-400">Ảnh nền Website</label>
-                            <button onclick="resetPreview()" class="text-blue-500 hover:text-blue-600 text-[11px] font-bold flex items-center gap-1 transition">
-                                🔄 RESET
-                            </button>
+                            <label class="text-[11px] font-bold uppercase tracking-[0.15em] text-gray-400">Ảnh nền mockup</label>
+                            <button onclick="resetPreview()" class="text-blue-500 hover:underline text-[11px] font-bold flex items-center gap-1 transition">🔄 RESET</button>
                         </div>
-                        <div class="relative">
-                            <input type="text" id="bgImgInput" onchange="setPreviewBgImg(this.value)" placeholder="Dán link ảnh tại đây..." 
+                        <div class="flex flex-col gap-3">
+                            <label class="w-full flex flex-col items-center px-4 py-3 bg-white dark:bg-gray-900 text-gray-400 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 cursor-pointer hover:border-blue-500 hover:text-blue-500 transition group">
+                                <span class="text-[10px] font-bold tracking-widest group-hover:scale-105 transition-transform">📁 TẢI ẢNH TỪ MÁY</span>
+                                <input type="file" id="bgUpload" class="hidden" accept="image/*" onchange="handleFileUpload(this)">
+                            </label>
+                            <div class="text-center text-[10px] text-gray-500 font-bold opacity-50">— HOẶC —</div>
+                            <input type="text" id="bgImgInput" onchange="setPreviewBgImg(this.value)" placeholder="Dán link ảnh (URL)..." 
                                 class="w-full text-xs bg-white dark:bg-gray-900 border dark:border-gray-700 p-3 rounded-xl focus:ring-2 ring-blue-500 outline-none shadow-sm transition">
                         </div>
-                        <p class="text-[10px] text-gray-500 mt-2 italic">* Giúp kiểm tra độ tương phản logo trên giao diện thật.</p>
                     </div>
 
                     <div class="mt-auto flex flex-col gap-3">
-                        <button id="modalCopyBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition shadow-lg active:scale-95">
-                            📋 Sao chép URL
+                        <button id="modalCopyBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition shadow-lg active:scale-95">
+                            📋 SAO CHÉP URL
                         </button>
-                        <a id="modalDownloadBtn" download class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-transparent hover:bg-gray-100 dark:hover:bg-gray-600 py-3.5 rounded-xl font-bold text-center transition shadow-sm">
-                            ⬇️ Tải xuống
+                        <a id="modalDownloadBtn" download class="w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 py-4 rounded-xl font-bold text-center transition shadow-sm">
+                            ⬇️ TẢI XUỐNG
                         </a>
                     </div>
                 </div>
@@ -108,8 +110,8 @@
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-8 py-3.5 rounded-full shadow-2xl opacity-0 transition-all transform translate-y-4 pointer-events-none z-[100] font-bold tracking-wide">
-        🚀 Đã sao chép liên kết!
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-8 py-4 rounded-full shadow-2xl opacity-0 transition-all transform translate-y-4 pointer-events-none z-[100] font-bold tracking-widest text-sm uppercase">
+        🚀 Link đã được copy!
     </div>
 
     <script>
@@ -122,37 +124,29 @@
                 const data = await res.json();
                 files = data.filter(f => f.name.match(/\.(svg|png|jpg|jpeg)$/i));
                 render(files);
-            } catch (e) {
-                console.error("Lỗi GitHub API. Kiểm tra tên repo hoặc token.");
-            }
+            } catch (e) { console.error("API Error:", e); }
         }
 
         function render(list) {
             const gallery = document.getElementById('gallery');
-            gallery.innerHTML = list.map((f, i) => {
-                const url = window.location.origin + window.location.pathname.replace('index.html', '') + f.name;
-                return `
+            gallery.innerHTML = list.map((f, i) => `
                 <div onclick="openModal(${i})" class="canvas-card group bg-white dark:bg-[#1c2128] rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 hover:border-blue-500 transition-all cursor-pointer relative shadow-sm hover:shadow-2xl">
-                    <div class="aspect-[4/3] bg-[#f1f5f9] dark:bg-[#24292e] flex items-center justify-center p-8 relative">
-                        <img src="${f.name}" class="max-w-full max-h-full object-contain z-0 group-hover:scale-110 transition-all duration-300 shadow-sm" loading="lazy">
-                        <div class="hover-actions absolute inset-0 bg-black/60 opacity-0 flex flex-col items-center justify-center gap-3 transition-opacity z-10">
-                            <span class="bg-blue-600 text-white px-5 py-2.5 rounded-full font-bold text-[11px] uppercase tracking-widest shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform">👁️ Xem Preview</span>
+                    <div class="aspect-[4/3] bg-[#f1f5f9] dark:bg-[#24292e] flex items-center justify-center p-10 relative">
+                        <img src="${f.name}" class="max-w-full max-h-full object-contain z-0 group-hover:scale-110 transition-all duration-500" loading="lazy">
+                        <div class="hover-actions absolute inset-0 bg-black/60 opacity-0 flex items-center justify-center transition-opacity z-10">
+                            <span class="bg-white text-black px-6 py-2.5 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] shadow-xl">Xem Preview</span>
                         </div>
                     </div>
-                    <div class="p-4 border-t dark:border-gray-800 flex justify-between items-center">
-                        <p class="text-[12px] font-semibold truncate text-gray-700 dark:text-gray-300 pr-2">${f.name}</p>
-                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500">${f.name.split('.').pop().toUpperCase()}</span>
+                    <div class="p-4 border-t dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-[#1c2128]">
+                        <p class="text-[11px] font-bold truncate text-gray-500 dark:text-gray-400 uppercase tracking-tighter pr-2">${f.name}</p>
+                        <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">${f.name.split('.').pop().toUpperCase()}</span>
                     </div>
                 </div>
-            `}).join('');
+            `).join('');
         }
 
-        // Logic Functions
         const toggleTheme = () => document.documentElement.classList.toggle('dark');
-        
-        const setPreviewBg = (color) => {
-            document.getElementById('previewCanvas').style.backgroundColor = color;
-        };
+        const setPreviewBg = (color) => document.getElementById('previewCanvas').style.backgroundColor = color;
 
         const setPreviewBgImg = (url) => {
             const layer = document.getElementById('bgImageLayer');
@@ -162,12 +156,22 @@
             }
         };
 
+        const handleFileUpload = (input) => {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => setPreviewBgImg(e.target.result);
+                reader.readAsDataURL(file);
+            }
+        };
+
         const resetPreview = () => {
             document.getElementById('previewCanvas').style.backgroundColor = '#eef2f6';
             const layer = document.getElementById('bgImageLayer');
             layer.style.backgroundImage = 'none';
             layer.classList.replace('opacity-100', 'opacity-0');
             document.getElementById('bgImgInput').value = '';
+            document.getElementById('bgUpload').value = '';
         };
 
         function openModal(index) {
@@ -204,7 +208,6 @@
             }, 2000);
         }
 
-        // Events
         document.getElementById('searchInput').oninput = (e) => {
             const val = e.target.value.toLowerCase();
             render(files.filter(f => f.name.toLowerCase().includes(val)));
