@@ -1,8 +1,56 @@
----
-layout: default
----
-<ul>
-{% for file in site.static_files %}
-  <li><a href="{{ file.path }}">{{ file.path }}</a></li>
-{% endfor %}
-</ul>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teknix Logo Assets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-10 flex justify-between items-center">
+            <h1 class="text-2xl font-bold italic text-blue-400">TEKNIX LOGO EXPLORER</h1>
+            <p class="text-sm text-gray-400">Click vào logo để copy link</p>
+        </header>
+
+        <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            </div>
+    </div>
+
+    <script>
+        const repo = 'teknixcorp/teknix-logo';
+        const gallery = document.getElementById('gallery');
+
+        // Lấy danh sách file từ GitHub API
+        fetch(`https://api.github.com/repos/${repo}/contents/`)
+            .then(res => res.json())
+            .then(files => {
+                files.filter(f => f.name.match(/\.(svg|png|jpg|jpeg)$/i)).forEach(file => {
+                    const card = document.createElement('div');
+                    card.className = "group bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-blue-500 transition-all cursor-pointer relative";
+                    
+                    // Template cho mỗi item
+                    card.innerHTML = `
+                        <div class="h-32 flex items-center justify-center mb-3 bg-gray-700/50 rounded shadow-inner overflow-hidden">
+                            <img src="${file.path}" class="max-h-24 max-w-full object-contain group-hover:scale-110 transition-transform" loading="lazy">
+                        </div>
+                        <p class="text-xs truncate text-gray-400 font-mono" title="${file.name}">${file.name}</p>
+                        <div class="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
+                    `;
+
+                    // Xử lý Copy Link khi click
+                    card.onclick = () => {
+                        const fullPath = `${window.location.origin}/${window.location.pathname.split('/')[1]}/${file.path}`.replace(/\/+/g, '/');
+                        const url = window.location.protocol + "//" + fullPath;
+                        
+                        navigator.clipboard.writeText(url);
+                        alert(`Đã copy: ${file.name}`);
+                    };
+
+                    gallery.appendChild(card);
+                });
+            });
+    </script>
+</body>
+</html>
