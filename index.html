@@ -3,54 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teknix Logo Assets</title>
+    <title>Teknix Logo Explorer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0e1217; }
+        .canvas-card:hover .copy-overlay { opacity: 1; }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 p-8">
-    <div class="max-w-6xl mx-auto">
-        <header class="mb-10 flex justify-between items-center">
-            <h1 class="text-2xl font-bold italic text-blue-400">TEKNIX LOGO EXPLORER</h1>
-            <p class="text-sm text-gray-400">Click vào logo để copy link</p>
-        </header>
+<body class="text-gray-200 min-h-screen">
 
-        <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+    <div class="max-w-7xl mx-auto px-6 py-10">
+        <h1 class="text-3xl font-bold mb-2">TEKNIX LOGO EXPLORER</h1>
+        <p class="text-gray-400 mb-8">Thư viện quản lý tài nguyên thiết kế Teknix.</p>
+
+        <div class="flex flex-col md:flex-row gap-4 mb-8">
+            <div class="relative flex-1">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm asset..." 
+                    class="w-full bg-[#1c2128] border border-gray-700 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 transition-all">
+            </div>
+            <div class="flex gap-2 overflow-x-auto pb-2" id="filterTabs">
+                <button onclick="filterFiles('all')" class="tab-btn bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium">Tất cả</button>
+                <button onclick="filterFiles('white')" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition">White</button>
+                <button onclick="filterFiles('blue')" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition">Blue</button>
+                <button onclick="filterFiles('full-color')" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition">Full Color</button>
+            </div>
+        </div>
+
+        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
             </div>
     </div>
 
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full shadow-2xl opacity-0 transition-opacity pointer-events-none font-medium">
+        Đã sao chép liên kết!
+    </div>
+
     <script>
-        const repo = 'teknixcorp/teknix-logo';
-        const gallery = document.getElementById('gallery');
+        const REPO_PATH = 'teknixcorp/teknix-logo';
+        let allFiles = [];
 
-        // Lấy danh sách file từ GitHub API
-        fetch(`https://api.github.com/repos/${repo}/contents/`)
-            .then(res => res.json())
-            .then(files => {
-                files.filter(f => f.name.match(/\.(svg|png|jpg|jpeg)$/i)).forEach(file => {
-                    const card = document.createElement('div');
-                    card.className = "group bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-blue-500 transition-all cursor-pointer relative";
-                    
-                    // Template cho mỗi item
-                    card.innerHTML = `
-                        <div class="h-32 flex items-center justify-center mb-3 bg-gray-700/50 rounded shadow-inner overflow-hidden">
-                            <img src="${file.path}" class="max-h-24 max-w-full object-contain group-hover:scale-110 transition-transform" loading="lazy">
+        async function init() {
+            try {
+                const res = await fetch(`https://api.github.com/repos/${REPO_PATH}/contents/`);
+                const data = await res.json();
+                allFiles = data.filter(f => f.name.match(/\.(svg|png|jpg|jpeg)$/i));
+                render(allFiles);
+            } catch (e) { console.error("Lỗi fetch API:", e); }
+        }
+
+        function render(files) {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = files.map(file => `
+                <div class="canvas-card group bg-[#1c2128] rounded-xl overflow-hidden border border-transparent hover:border-blue-500 transition-all cursor-pointer relative">
+                    <div class="aspect-[4/3] bg-[#eef2f6] flex items-center justify-center p-6 relative">
+                        <img src="${file.name}" class="max-w-full max-h-full object-contain shadow-sm" loading="lazy">
+                        <div class="copy-overlay absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 transition-opacity">
+                            <button onclick="copyLink(event, '${file.name}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
+                                📋 Copy Link
+                            </button>
                         </div>
-                        <p class="text-xs truncate text-gray-400 font-mono" title="${file.name}">${file.name}</p>
-                        <div class="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
-                    `;
+                    </div>
+                    <div class="p-3">
+                        <p class="text-[13px] font-medium truncate text-gray-300">${file.name}</p>
+                        <p class="text-[11px] text-gray-500 uppercase mt-1">${file.name.split('.').pop()}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-                    // Xử lý Copy Link khi click
-                    card.onclick = () => {
-                        const fullPath = `${window.location.origin}/${window.location.pathname.split('/')[1]}/${file.path}`.replace(/\/+/g, '/');
-                        const url = window.location.protocol + "//" + fullPath;
-                        
-                        navigator.clipboard.writeText(url);
-                        alert(`Đã copy: ${file.name}`);
-                    };
-
-                    gallery.appendChild(card);
-                });
+        function copyLink(e, fileName) {
+            e.stopPropagation();
+            // Fix lỗi URL: lấy domain hiện tại + path
+            const url = window.location.origin + window.location.pathname.replace('index.html', '') + fileName;
+            
+            navigator.clipboard.writeText(url).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.remove('opacity-0');
+                setTimeout(() => toast.classList.add('opacity-0'), 2000);
             });
+        }
+
+        // Search Logic
+        document.getElementById('searchInput').oninput = (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = allFiles.filter(f => f.name.toLowerCase().includes(val));
+            render(filtered);
+        };
+
+        // Filter Logic
+        function filterFiles(tag) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('bg-blue-600', 'bg-[#1c2128]'));
+            event.target.classList.replace('bg-[#1c2128]', 'bg-blue-600');
+            
+            if (tag === 'all') return render(allFiles);
+            const filtered = allFiles.filter(f => f.name.toLowerCase().includes(tag));
+            render(filtered);
+        }
+
+        init();
     </script>
 </body>
 </html>
