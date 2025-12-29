@@ -1,171 +1,169 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teknix Logo Explorer</title>
+    <title>Teknix Logo Explorer Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0e1217; }
-        .canvas-card:hover .copy-overlay { opacity: 1; }
-        .modal { display: none; } /* Hidden by default */
-        .modal.open { display: flex; } /* Show when open */
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s; }
+        .canvas-card:hover .hover-actions { opacity: 1; }
+        .modal { display: none; }
+        .modal.open { display: flex; }
     </style>
 </head>
-<body class="text-gray-200 min-h-screen">
+<body class="bg-gray-50 dark:bg-[#0e1217] text-gray-900 dark:text-gray-100 min-h-screen">
 
     <div class="max-w-7xl mx-auto px-6 py-10">
-        <h1 class="text-3xl font-bold mb-2">TEKNIX LOGO EXPLORER</h1>
-        <p class="text-gray-400 mb-8">Thư viện quản lý tài nguyên thiết kế Teknix.</p>
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold mb-1">TEKNIX LOGO EXPLORER</h1>
+                <p class="text-gray-500 dark:text-gray-400">Quản lý và kiểm thử logo assets.</p>
+            </div>
+            <button onclick="toggleTheme()" class="p-3 rounded-full bg-gray-200 dark:bg-gray-800 hover:ring-2 ring-blue-500 transition">
+                <span class="dark:hidden">🌙 Dark Mode</span>
+                <span class="hidden dark:inline">☀️ Light Mode</span>
+            </button>
+        </header>
 
         <div class="flex flex-col md:flex-row gap-4 mb-8">
-            <div class="relative flex-1">
-                <input type="text" id="searchInput" placeholder="Tìm kiếm asset..." 
-                    class="w-full bg-[#1c2128] border border-gray-700 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 transition-all">
-            </div>
+            <input type="text" id="searchInput" placeholder="Tìm kiếm logo..." 
+                class="flex-1 bg-white dark:bg-[#1c2128] border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 ring-blue-500 transition">
             <div class="flex gap-2 overflow-x-auto pb-2" id="filterTabs">
-                <button onclick="filterFiles('all', this)" class="tab-btn bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap">Tất cả</button>
-                <button onclick="filterFiles('white', this)" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition whitespace-nowrap">White</button>
-                <button onclick="filterFiles('blue', this)" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition whitespace-nowrap">Blue</button>
-                <button onclick="filterFiles('full-color', this)" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition whitespace-nowrap">Full Color</button>
+                <button onclick="filterFiles('all', this)" class="tab-btn bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium">Tất cả</button>
+                <button onclick="filterFiles('white', this)" class="tab-btn bg-white dark:bg-[#1c2128] border border-gray-300 dark:border-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700">White</button>
+                <button onclick="filterFiles('blue', this)" class="tab-btn bg-white dark:bg-[#1c2128] border border-gray-300 dark:border-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700">Blue</button>
             </div>
         </div>
 
-        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-            </div>
+        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
     </div>
 
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full shadow-2xl opacity-0 transition-opacity pointer-events-none font-medium z-50">
-        Đã sao chép liên kết!
-    </div>
-
-    <div id="previewModal" class="modal fixed inset-0 bg-black bg-opacity-80 items-center justify-center p-4 z-50">
-        <div class="relative bg-[#1c2128] rounded-xl max-w-3xl w-full p-6">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-            </button>
-            
-            <div class="aspect-[4/3] bg-[#eef2f6] flex items-center justify-center p-6 rounded-lg mb-4">
-                <img id="modalImage" src="" class="max-w-full max-h-[80vh] object-contain" alt="Preview Image">
+    <div id="previewModal" class="modal fixed inset-0 bg-black/90 items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-[#1c2128] rounded-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden relative shadow-2xl">
+            <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-[#1c2128]">
+                <span id="modalFileName" class="font-mono text-sm truncate pr-8">filename.svg</span>
+                <button onclick="closeModal()" class="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition">✕</button>
             </div>
-            
-            <p id="modalFileName" class="text-sm text-gray-400 text-center mb-6"></p>
 
-            <div class="flex justify-center gap-4">
-                <a id="downloadBtn" href="#" download class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                    Download
-                </a>
-                <button id="modalCopyLinkBtn" onclick="copyLink(event, document.getElementById('modalImage').src)" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                    Copy Link
-                </button>
-            </div>
-        </div>
-    </div>
+            <div class="flex flex-col md:flex-row flex-1 overflow-hidden">
+                <div id="previewCanvas" class="flex-1 bg-[#eef2f6] flex items-center justify-center p-12 relative transition-colors overflow-hidden">
+                    <img id="modalImage" src="" class="max-w-full max-h-full object-contain z-10 drop-shadow-sm">
+                    <div id="bgImageLayer" class="absolute inset-0 bg-cover bg-center opacity-50"></div>
+                </div>
 
-    <script>
-        const REPO_PATH = 'teknixcorp/teknix-logo';
-        let allFiles = [];
-        let currentFilter = 'all'; // Biến theo dõi bộ lọc hiện tại
-
-        // Utility function to get full file URL
-        function getFullFileUrl(fileName) {
-            return window.location.origin + window.location.pathname.replace('index.html', '') + fileName;
-        }
-
-        async function init() {
-            try {
-                const res = await fetch(`https://api.github.com/repos/${REPO_PATH}/contents/`);
-                const data = await res.json();
-                allFiles = data.filter(f => f.name.match(/\.(svg|png|jpg|jpeg)$/i));
-                render(allFiles);
-            } catch (e) { console.error("Lỗi fetch API:", e); }
-        }
-
-        function render(files) {
-            const gallery = document.getElementById('gallery');
-            gallery.innerHTML = files.map(file => {
-                const fullUrl = getFullFileUrl(file.name);
-                return `
-                <div onclick="openModal('${fullUrl}', '${file.name}')" class="canvas-card group bg-[#1c2128] rounded-xl overflow-hidden border border-transparent hover:border-blue-500 transition-all cursor-pointer relative">
-                    <div class="aspect-[4/3] bg-[#eef2f6] flex items-center justify-center p-6 relative">
-                        <img src="${fullUrl}" class="max-w-full max-h-full object-contain shadow-sm" loading="lazy">
-                        <div class="copy-overlay absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 transition-opacity">
-                            <button onclick="copyLink(event, '${fullUrl}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
-                                📋 Copy Link
-                            </button>
+                <div class="w-full md:w-72 p-6 border-l dark:border-gray-700 bg-gray-50 dark:bg-[#1c2128] flex flex-col gap-6">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Màu nền thử nghiệm</label>
+                        <div class="grid grid-cols-5 gap-2">
+                            <button onclick="setPreviewBg('#eef2f6')" class="w-8 h-8 rounded border bg-[#eef2f6]"></button>
+                            <button onclick="setPreviewBg('#ffffff')" class="w-8 h-8 rounded border bg-white"></button>
+                            <button onclick="setPreviewBg('#1a202c')" class="w-8 h-8 rounded border bg-gray-900"></button>
+                            <button onclick="setPreviewBg('#3b82f6')" class="w-8 h-8 rounded border bg-blue-500"></button>
+                            <input type="color" oninput="setPreviewBg(this.value)" class="w-8 h-8 rounded cursor-pointer overflow-hidden border-none">
                         </div>
                     </div>
-                    <div class="p-3">
-                        <p class="text-[13px] font-medium truncate text-gray-300">${file.name}</p>
-                        <p class="text-[11px] text-gray-500 uppercase mt-1">${file.name.split('.').pop()}</p>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Ảnh nền (Custom URL)</label>
+                        <input type="text" onchange="setPreviewBgImg(this.value)" placeholder="https://image-url..." 
+                            class="w-full text-xs bg-white dark:bg-gray-900 border dark:border-gray-700 p-2 rounded focus:ring-1 ring-blue-500 outline-none">
+                    </div>
+
+                    <div class="mt-auto flex flex-col gap-2">
+                        <button id="modalCopyBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 transition">
+                            📋 Copy URL
+                        </button>
+                        <a id="modalDownloadBtn" download class="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 py-2.5 rounded-lg font-bold text-center transition">
+                            ⬇️ Download
+                        </a>
                     </div>
                 </div>
-            `}).join('');
+            </div>
+
+            <button onclick="prevImage()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-4 rounded-full text-white transition backdrop-blur-md">❮</button>
+            <button onclick="nextImage()" class="absolute right-[300px] top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-4 rounded-full text-white transition backdrop-blur-md hidden md:block">❯</button>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full shadow-2xl opacity-0 transition-opacity pointer-events-none z-[60]">Đã copy link!</div>
+
+    <script>
+        const REPO = 'teknixcorp/teknix-logo';
+        let files = [], currentIdx = -1;
+
+        async function init() {
+            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/`);
+            const data = await res.json();
+            files = data.filter(f => f.name.match(/\.(svg|png|jpg|jpeg)$/i));
+            render(files);
         }
 
-        function copyLink(e, url) {
-            e.stopPropagation(); // Ngăn sự kiện click lan ra gây mở modal
-            
-            navigator.clipboard.writeText(url).then(() => {
-                const toast = document.getElementById('toast');
-                toast.classList.remove('opacity-0');
-                setTimeout(() => toast.classList.add('opacity-0'), 2000);
-            });
+        function render(list) {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = list.map((f, i) => `
+                <div class="canvas-card group bg-white dark:bg-[#1c2128] rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-all cursor-pointer relative shadow-sm hover:shadow-xl">
+                    <div class="aspect-[4/3] bg-[#f8fafc] dark:bg-[#24292e] flex items-center justify-center p-6 relative">
+                        <img src="${f.name}" class="max-w-full max-h-full object-contain z-0 group-hover:scale-105 transition-transform" loading="lazy">
+                        <div class="hover-actions absolute inset-0 bg-black/40 opacity-0 flex flex-col items-center justify-center gap-2 transition-opacity z-10">
+                            <button onclick="openModal(${i}); event.stopPropagation();" class="bg-white text-black px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider shadow-lg">👁️ Preview</button>
+                        </div>
+                    </div>
+                    <div class="p-3 border-t dark:border-gray-700">
+                        <p class="text-[12px] font-medium truncate opacity-80">${f.name}</p>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Search Logic
-        document.getElementById('searchInput').oninput = (e) => {
-            const val = e.target.value.toLowerCase();
-            const filtered = allFiles.filter(f => f.name.toLowerCase().includes(val));
-            render(filtered);
-        };
-
-        // Filter Logic
-        function filterFiles(tag, element) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.replace('bg-blue-600', 'bg-[#1c2128]'));
-            element.classList.replace('bg-[#1c2128]', 'bg-blue-600');
-            
-            currentFilter = tag; // Cập nhật bộ lọc hiện tại
-            let filtered = allFiles;
-
-            if (tag !== 'all') {
-                filtered = allFiles.filter(f => f.name.toLowerCase().includes(tag));
-            }
-            render(filtered);
+        // Functions
+        const toggleTheme = () => document.documentElement.classList.toggle('dark');
+        const setPreviewBg = (color) => {
+            document.getElementById('previewCanvas').style.backgroundColor = color;
+            document.getElementById('bgImageLayer').style.backgroundImage = 'none';
         }
-
-        // Modal Logic
-        function openModal(imageUrl, fileName) {
+        const setPreviewBgImg = (url) => document.getElementById('bgImageLayer').style.backgroundImage = `url('${url}')`;
+        
+        function openModal(index) {
+            currentIdx = index;
+            const file = files[index];
             const modal = document.getElementById('previewModal');
-            document.getElementById('modalImage').src = imageUrl;
-            document.getElementById('modalFileName').textContent = fileName;
-            document.getElementById('downloadBtn').href = imageUrl; // Đặt link download
-            document.getElementById('downloadBtn').download = fileName; // Đặt tên file khi download
-            document.getElementById('modalCopyLinkBtn').onclick = (e) => copyLink(e, imageUrl); // Gán lại sự kiện copy cho nút trong modal
+            const url = window.location.origin + window.location.pathname.replace('index.html', '') + file.name;
 
+            document.getElementById('modalImage').src = file.name;
+            document.getElementById('modalFileName').textContent = file.name;
+            document.getElementById('modalDownloadBtn').href = file.name;
+            document.getElementById('modalCopyBtn').onclick = () => copyText(url);
+            
             modal.classList.add('open');
-            document.body.style.overflow = 'hidden'; // Ngăn cuộn trang
+            document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
-            const modal = document.getElementById('previewModal');
-            modal.classList.remove('open');
-            document.body.style.overflow = ''; // Cho phép cuộn trang trở lại
+            document.getElementById('previewModal').classList.remove('open');
+            document.body.style.overflow = '';
         }
 
-        // Đóng modal khi click ra ngoài hoặc nhấn Esc
-        document.getElementById('previewModal').addEventListener('click', (e) => {
-            if (e.target.id === 'previewModal') {
-                closeModal();
-            }
-        });
+        const nextImage = () => openModal((currentIdx + 1) % files.length);
+        const prevImage = () => openModal((currentIdx - 1 + files.length) % files.length);
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            const t = document.getElementById('toast');
+            t.classList.remove('opacity-0');
+            setTimeout(() => t.classList.add('opacity-0'), 2000);
+        }
+
+        // Key Listeners
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('previewModal').classList.contains('open')) {
-                closeModal();
-            }
+            if (!document.getElementById('previewModal').classList.contains('open')) return;
+            if (e.key === 'ArrowRight') nextImage();
+            if (e.key === 'ArrowLeft') prevImage();
+            if (e.key === 'Escape') closeModal();
         });
 
         init();
