@@ -9,6 +9,8 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0e1217; }
         .canvas-card:hover .copy-overlay { opacity: 1; }
+        .modal { display: none; } /* Hidden by default */
+        .modal.open { display: flex; } /* Show when open */
     </style>
 </head>
 <body class="text-gray-200 min-h-screen">
@@ -23,10 +25,10 @@
                     class="w-full bg-[#1c2128] border border-gray-700 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 transition-all">
             </div>
             <div class="flex gap-2 overflow-x-auto pb-2" id="filterTabs">
-                <button onclick="filterFiles('all')" class="tab-btn bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium">Tất cả</button>
-                <button onclick="filterFiles('white')" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition">White</button>
-                <button onclick="filterFiles('blue')" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition">Blue</button>
-                <button onclick="filterFiles('full-color')" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition">Full Color</button>
+                <button onclick="filterFiles('all', this)" class="tab-btn bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap">Tất cả</button>
+                <button onclick="filterFiles('white', this)" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition whitespace-nowrap">White</button>
+                <button onclick="filterFiles('blue', this)" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition whitespace-nowrap">Blue</button>
+                <button onclick="filterFiles('full-color', this)" class="tab-btn bg-[#1c2128] hover:bg-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium transition whitespace-nowrap">Full Color</button>
             </div>
         </div>
 
@@ -34,13 +36,44 @@
             </div>
     </div>
 
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full shadow-2xl opacity-0 transition-opacity pointer-events-none font-medium">
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full shadow-2xl opacity-0 transition-opacity pointer-events-none font-medium z-50">
         Đã sao chép liên kết!
+    </div>
+
+    <div id="previewModal" class="modal fixed inset-0 bg-black bg-opacity-80 items-center justify-center p-4 z-50">
+        <div class="relative bg-[#1c2128] rounded-xl max-w-3xl w-full p-6">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            
+            <div class="aspect-[4/3] bg-[#eef2f6] flex items-center justify-center p-6 rounded-lg mb-4">
+                <img id="modalImage" src="" class="max-w-full max-h-[80vh] object-contain" alt="Preview Image">
+            </div>
+            
+            <p id="modalFileName" class="text-sm text-gray-400 text-center mb-6"></p>
+
+            <div class="flex justify-center gap-4">
+                <a id="downloadBtn" href="#" download class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                    Download
+                </a>
+                <button id="modalCopyLinkBtn" onclick="copyLink(event, document.getElementById('modalImage').src)" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                    Copy Link
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
         const REPO_PATH = 'teknixcorp/teknix-logo';
         let allFiles = [];
+        let currentFilter = 'all'; // Biến theo dõi bộ lọc hiện tại
+
+        // Utility function to get full file URL
+        function getFullFileUrl(fileName) {
+            return window.location.origin + window.location.pathname.replace('index.html', '') + fileName;
+        }
 
         async function init() {
             try {
@@ -53,12 +86,14 @@
 
         function render(files) {
             const gallery = document.getElementById('gallery');
-            gallery.innerHTML = files.map(file => `
-                <div class="canvas-card group bg-[#1c2128] rounded-xl overflow-hidden border border-transparent hover:border-blue-500 transition-all cursor-pointer relative">
+            gallery.innerHTML = files.map(file => {
+                const fullUrl = getFullFileUrl(file.name);
+                return `
+                <div onclick="openModal('${fullUrl}', '${file.name}')" class="canvas-card group bg-[#1c2128] rounded-xl overflow-hidden border border-transparent hover:border-blue-500 transition-all cursor-pointer relative">
                     <div class="aspect-[4/3] bg-[#eef2f6] flex items-center justify-center p-6 relative">
-                        <img src="${file.name}" class="max-w-full max-h-full object-contain shadow-sm" loading="lazy">
+                        <img src="${fullUrl}" class="max-w-full max-h-full object-contain shadow-sm" loading="lazy">
                         <div class="copy-overlay absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 transition-opacity">
-                            <button onclick="copyLink(event, '${file.name}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
+                            <button onclick="copyLink(event, '${fullUrl}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
                                 📋 Copy Link
                             </button>
                         </div>
@@ -68,13 +103,11 @@
                         <p class="text-[11px] text-gray-500 uppercase mt-1">${file.name.split('.').pop()}</p>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
-        function copyLink(e, fileName) {
-            e.stopPropagation();
-            // Fix lỗi URL: lấy domain hiện tại + path
-            const url = window.location.origin + window.location.pathname.replace('index.html', '') + fileName;
+        function copyLink(e, url) {
+            e.stopPropagation(); // Ngăn sự kiện click lan ra gây mở modal
             
             navigator.clipboard.writeText(url).then(() => {
                 const toast = document.getElementById('toast');
@@ -91,14 +124,49 @@
         };
 
         // Filter Logic
-        function filterFiles(tag) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('bg-blue-600', 'bg-[#1c2128]'));
-            event.target.classList.replace('bg-[#1c2128]', 'bg-blue-600');
+        function filterFiles(tag, element) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.replace('bg-blue-600', 'bg-[#1c2128]'));
+            element.classList.replace('bg-[#1c2128]', 'bg-blue-600');
             
-            if (tag === 'all') return render(allFiles);
-            const filtered = allFiles.filter(f => f.name.toLowerCase().includes(tag));
+            currentFilter = tag; // Cập nhật bộ lọc hiện tại
+            let filtered = allFiles;
+
+            if (tag !== 'all') {
+                filtered = allFiles.filter(f => f.name.toLowerCase().includes(tag));
+            }
             render(filtered);
         }
+
+        // Modal Logic
+        function openModal(imageUrl, fileName) {
+            const modal = document.getElementById('previewModal');
+            document.getElementById('modalImage').src = imageUrl;
+            document.getElementById('modalFileName').textContent = fileName;
+            document.getElementById('downloadBtn').href = imageUrl; // Đặt link download
+            document.getElementById('downloadBtn').download = fileName; // Đặt tên file khi download
+            document.getElementById('modalCopyLinkBtn').onclick = (e) => copyLink(e, imageUrl); // Gán lại sự kiện copy cho nút trong modal
+
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden'; // Ngăn cuộn trang
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('previewModal');
+            modal.classList.remove('open');
+            document.body.style.overflow = ''; // Cho phép cuộn trang trở lại
+        }
+
+        // Đóng modal khi click ra ngoài hoặc nhấn Esc
+        document.getElementById('previewModal').addEventListener('click', (e) => {
+            if (e.target.id === 'previewModal') {
+                closeModal();
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('previewModal').classList.contains('open')) {
+                closeModal();
+            }
+        });
 
         init();
     </script>
